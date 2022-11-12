@@ -2,6 +2,7 @@ package keygen
 
 import (
 	"crypto/ecdsa"
+	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/x509"
 	"encoding/pem"
@@ -19,7 +20,7 @@ const (
 
 type ECKey struct {
 	//BitSize of the key to be generated
-	BitSize           int
+	ECCurve           elliptic.Curve
 	PrivateKey        *ecdsa.PrivateKey
 	PublicKey         *ecdsa.PublicKey
 	PrivatKeyPemBlock *pem.Block
@@ -35,7 +36,7 @@ func (r *ECKey) MakeKeys(reader io.Reader) error {
 	}
 
 	var err error
-	r.PrivateKey, err = ecdsa.GenerateKey(reader, reader)
+	r.PrivateKey, err = ecdsa.GenerateKey(r.ECCurve, reader)
 	if err != nil {
 		return fmt.Errorf("could not create keys due to %s ", err.Error())
 	}
@@ -62,22 +63,36 @@ func (r *ECKey) makeKeyPemBlock() {
 	r.makePublicKeyPemBlock()
 }
 
-func (r *ECKey) makePrivateKeyPemBlock() {
+func (r *ECKey) makePrivateKeyPemBlock() error {
+
+	bytes, err := x509.MarshalECPrivateKey(r.PrivateKey)
+	if err != nil {
+		return fmt.Errorf("could not marshal private key due to %s", err.Error())
+	}
+
 	r.PrivatKeyPemBlock = &pem.Block{
 		Type:  ECPvtKey,
-		Bytes: x509.MarshalECPrivateKey(r.PrivateKey),
+		Bytes: bytes,
 	}
 	r.PrivatKeyPemBlockEncoded = pem.EncodeToMemory(r.PrivatKeyPemBlock)
+	return nil
 
 }
 
-func (r *ECKey) makePublicKeyPemBlock() {
+func (r *ECKey) makePublicKeyPemBlock() error {
+
+	bytes, err := x509.MarshalPKIXPublicKey(r.PublicKey)
+	if err != nil {
+		return fmt.Errorf("could not marshal public key due to %s", err.Error())
+	}
+
 	r.PublicKeyPemBlock = &pem.Block{
 		Type:  ECPubKey,
-		Bytes: x509.MarshalECPrivateKey(r.PublicKey),
+		Bytes: bytes,
 	}
 	r.PublicKeyPemBlockEncoded = pem.EncodeToMemory(r.PublicKeyPemBlock)
 
+	return nil
 }
 
 func (r *ECKey) WriteKeysToFile(filename string) error {

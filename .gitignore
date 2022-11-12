@@ -17,4 +17,6 @@
 # ignore generated keys
 *.rsa
 *.rsa.pub
+*.ecdsa
+*.ecdsa.pub
 certs

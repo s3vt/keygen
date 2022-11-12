@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/elliptic"
 	"crypto/rand"
 
 	"github.com/s3vt/keygen"
@@ -8,12 +9,16 @@ import (
 
 func main() {
 	//RSA keys
-	rsaKey := &keygen.RSAKey{BitSize: 2048}
+	do(&keygen.RSAKey{BitSize: 2048})
 
-	rsaKey.MakeKeys(rand.Reader)
+	do(&keygen.ECKey{ECCurve: elliptic.P224()})
+	do(&keygen.ECKey{ECCurve: elliptic.P256()})
+	do(&keygen.ECKey{ECCurve: elliptic.P384()})
+	do(&keygen.ECKey{ECCurve: elliptic.P521()})
 
-	rsaKey.PrintKeys(true)
+}
 
-	rsaKey.WriteKeysToFile("sapan")
-
+func do(keymaker keygen.Keymaker) {
+	keymaker.MakeKeys(rand.Reader)
+	keymaker.PrintKeys(true)
 }
