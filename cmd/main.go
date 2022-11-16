@@ -1,20 +1,22 @@
 package main
 
 import (
-	"crypto/elliptic"
 	"crypto/rand"
 
 	"github.com/s3vt/keygen"
+	"github.com/s3vt/keygen/ui"
 )
 
 func main() {
 	//RSA keys
-	do(&keygen.RSAKey{BitSize: 2048})
+	// do(&keygen.RSAKey{BitSize: 2048})
 
-	do(&keygen.ECKey{ECCurve: elliptic.P224()})
-	do(&keygen.ECKey{ECCurve: elliptic.P256()})
-	do(&keygen.ECKey{ECCurve: elliptic.P384()})
-	do(&keygen.ECKey{ECCurve: elliptic.P521()})
+	// do(&keygen.ECKey{ECCurve: elliptic.P224()})
+	// do(&keygen.ECKey{ECCurve: elliptic.P256()})
+	// do(&keygen.ECKey{ECCurve: elliptic.P384()})
+	// do(&keygen.ECKey{ECCurve: elliptic.P521()})
+
+	ui.CreateWindow()
 
 }
 
